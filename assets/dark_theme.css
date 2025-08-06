@@ -1,0 +1,30 @@
+/* assets/dark_theme.css */
+body {
+    background-color: #222222; /* Dark background */
+    color: #f0f0f0; /* Light text color */
+}
+
+/* You might need to target specific Dash components for consistent styling */
+.dash-app-container {
+    background-color: #222222;
+    color: #f0f0f0;
+}
+
+/* Style for input fields */
+.dash-input {
+    background-color: #333333;
+    color: #f0f0f0;
+    border: 1px solid #555555;
+}
+
+/* Style for buttons */
+.dash-button {
+    background-color: #444444;
+    color: #f0f0f0;
+    border: 1px solid #666666;
+}
+
+/* Style for labels */
+.dash-label {
+    color: #f0f0f0;
+}
