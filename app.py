@@ -32,21 +32,51 @@ app = dash.Dash(__name__)
 server = app.server  # For deployment if needed
 
 app.layout = html.Div([
-    html.H1("Stock Quality Rule of 40"),
+    html.H1("Rule of 40"),
     html.Div([
-        html.Label("Company Ticker Label:"),
+        html.H4("📘 Rule of 40 / 40法則"),
+        html.P("The Rule of 40 is a metric to evaluate a company's financial health. "
+               "If the intercept of Revenue Growth is greater than 40, "
+               "the company is considered financially strong."),
+        html.P("40法則衡量一家公司的成長潛力。"
+               "任何y軸截距高於40的公司被視為可投資。"
+               "輸入您想要比較的公司代碼及指標，我們會計算該公司的40法則。"),
+    ],style={
+        'width': '30%',
+        'margin': '20px',
+        'padding': '10px',
+        'backgroundColor': '#222222',
+        'border': '1px solid #ccc',
+        'borderRadius': '8px',
+        'float': 'left',
+        'fontSize': '16px'}),
+    
+    html.Div([
+        html.Label("Company Ticker Label:   "),
         dcc.Input(id='input-label', type='text', placeholder='e.g. NVDA'),
         html.Button('Add Company', id='submit-button', n_clicks=0),
-        html.Label("Adjusted Operating Margin (%):"),
+        html.H1(""),
+        html.Label("Adjusted Operating Margin (%):   "),
         dcc.Input(id='input-margin', type='number', step=0.01),
-        html.Label("YoY Revenue Growth (%):"),
+        html.H1(""),
+        html.Label("YoY Revenue Growth (%):   "),
         dcc.Input(id='input-growth', type='number', step=0.01),
-        html.Label("Market Cap (Billion):"),
+        html.H1(""),
+        html.Label("Market Cap (Billion):  "),
         dcc.Input(id='input-market-cap', type='number', step=0.01)
+    ], style={'width': '30%',
+        'float': 'left',
+        'margin': '20px',
+        'padding': '20px',
+        'fontSize': '16px'}),
 
-    ], style={'margin': '20px'}),
-    dcc.Store(id='company-data', data=initial_data),
-    dcc.Graph(id='scatter-plot')
+    html.Div([
+        dcc.Store(id='company-data', data=initial_data),
+        dcc.Graph(id='scatter-plot')
+    ], style={
+        'width': '68%',
+        'float': 'left'
+    })
 
 ])
 
@@ -71,17 +101,23 @@ def update_data(n_clicks, label, margin, growth, cap, data):
 
 def update_plot(data):
     labels, margins, growths, caps = zip(*data)
-    intercept = 40 #sum(y - slope * x for x, y in zip(margins, growths)) / len(margins)
+    intercept_line = 40 #
 
     # Regression line
     x_line = list(range(0, int(max(margins)) + 5))
-    y_line = [slope * x + intercept for x in x_line]
+    y_line = [slope * x + intercept_line for x in x_line]
 
+    intercepts = [y - slope * x for x, y in zip(margins, growths)]
+    hover_texts = [
+        f"{label}<br>Margin: {x:.2f}%<br>Growth: {y:.2f}%<br>Market Cap: {c:.2f}B<br>Intercept: {b:.2f}"
+        for label, x, y, c, b in zip(labels, margins, growths, caps, intercepts)
+    ]
     scatter = go.Scatter(
         x=margins,
         y=growths,
         mode='markers+text',
         text=labels,
+        hovertext=hover_texts,
         textposition='top center',
         marker=dict(
             size=caps,
@@ -121,12 +157,13 @@ def update_plot(data):
             title_font=dict(color='#f0f0f0'), # Light title font
         ),
         showlegend=True,
-        width=1200,
-        height=800,
+        width=1600,
+        height=600,
 
         plot_bgcolor='#333333', # Dark background for the plot area
         paper_bgcolor='#222222', # Dark background for the entire figure
         font=dict(color='#f0f0f0') # Default font color for the graph
+    
     )
 
 
